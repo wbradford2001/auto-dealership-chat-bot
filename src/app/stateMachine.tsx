@@ -185,6 +185,8 @@ import {
       },
       next: (response: string) => {
         const recommendedServices = getRecommendedServices(make);
+        console.log(recommendedServices)
+
         const selectedService = recommendedServices.find(service => response.toLowerCase().includes(service.toLowerCase()));
         if (selectedService) {
           setService(selectedService);
@@ -201,6 +203,7 @@ import {
       },
       next: (response: string) => {
         const recommendedServices = getRecommendedServices(make);
+        console.log(recommendedServices)
         const selectedService = recommendedServices.find(service => response.toLowerCase().includes(service.toLowerCase()));
         if (selectedService) {
           setService(selectedService);
@@ -270,7 +273,9 @@ import {
     },
     confirmation: {
       message: () => `Say Thanks, ${name}. Confirm their appointment for ${make} ${model} ${year}, service: ${service}, on ${appointmentDay} at ${appointmentTime}. Wish them a good rest of their day`,
-      next: () => null,
+      next: (response: string) => {
+
+      },
     },
 });
 

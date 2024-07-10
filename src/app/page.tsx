@@ -60,7 +60,11 @@ const Home: React.FC = () => {
 
   const startTranscription = async () => {
     if (currentNodeKey === 'halt' || currentNodeKey === 'confirmation') {
+      console.log("STOPPING")
+      console.log(currentNodeKey)
       stopTranscription();
+
+      
       return;
     }
 
@@ -93,6 +97,7 @@ const Home: React.FC = () => {
 
     mediaRecorder.addEventListener("dataavailable", (event) => {
       if (event.data.size > 0) {
+        
         connection.send(event.data);
       }
     });
@@ -132,7 +137,7 @@ const Home: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (chatbotStarted && !isListening && message && currentNodeKey !== 'halt') {
+    if (chatbotStarted && !isListening && message && currentNodeKey !== 'halt'&& currentNodeKey !== 'confirmation') {
       const timer = setTimeout(() => {
         startTranscription();
       }, 2000); // Delay before restarting transcription
@@ -160,6 +165,7 @@ const Home: React.FC = () => {
             {/* <button className={styles.stopButton} onClick={stopTranscription} disabled={!isListening}>
               {isListening ? "Stop Listening" : "Stopped"}
             </button> */}
+            
             <Agent prompt={message} customer_words={customer_words}/>
           </div>
           <div className={styles.infoContainer}>
