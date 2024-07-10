@@ -1,65 +1,70 @@
-// TTS.tsx
-import { createClient } from "@deepgram/sdk";
+import React, { useEffect, useState } from 'react';
 
-const deepgram = createClient('your-deepgram-api-key');
+export const readMessageAloud = async (text: string): Promise<string> => {
+  const url = "https://api.deepgram.com/v1/speak?model=aura-asteria-en";
+  const apiKey = "1a76586463d37e92d561966f88c045b910a14556";
+  
+  const body = JSON.stringify({ text });
 
-export const readMessageAloud = async (text: string) => {
-  try {
-    const response = await deepgram.speak.request(
-      { text },
-      {
-        model: "aura-asteria-en",
-        encoding: "linear16",
-        container: "wav",
-      }
-    );
+  const headers = {
+    Authorization: `Token ${apiKey}`,
+    "Content-Type": "application/json",
+  };
 
-    const stream = await response.getStream();
-    if (stream) {
-      const audioBuffer = await getAudioBuffer(stream);
-      playAudio(audioBuffer);
-    } else {
-      console.error("Error generating audio:", stream);
-    }
+  const options = {
+    method: "POST",
+    headers: headers,
+    body: body,
+  };
 
-    const headers = await response.getHeaders();
-    if (headers) {
-      console.log("Headers:", headers);
-    }
-  } catch (error) {
-    console.error("Error with Deepgram TTS:", error);
+  const response = await fetch(url, options);
+  if (!response.ok) {
+    throw new Error("Failed to make request: " + response.statusText);
   }
+
+  const blob = await response.blob();
+  const objectUrl = URL.createObjectURL(blob);
+
+  return objectUrl;
 };
 
-const getAudioBuffer = async (response: Response) => {
-  const reader = response.body?.getReader();
-  if (!reader) throw new Error("Failed to get reader from response");
+interface AudioPlayerProps {
+  responseMessage: string;
+}
 
-  const chunks: Uint8Array[] = [];
-  let done: boolean | undefined = false;
+const AudioPlayer: React.FC<AudioPlayerProps> = ({ responseMessage }) => {
+  const [audioUrl, setAudioUrl] = useState<string | null>(null);
 
-  while (!done) {
-    const { value, done: chunkDone } = await reader.read();
-    if (value) {
-      chunks.push(value);
+  const fetchAndPlayAudio = async () => {
+    try {
+      const url = await readMessageAloud(responseMessage);
+      setAudioUrl(url);
+    } catch (error) {
+      console.error("Error:", error);
     }
-    done = chunkDone;
-  }
+  };
 
-  const dataArray = chunks.reduce(
-    (acc, chunk) => Uint8Array.from([...acc, ...chunk]),
-    new Uint8Array(0)
+  useEffect(() => {
+    if (responseMessage) {
+      fetchAndPlayAudio();
+    }
+  }, [responseMessage]);
+
+  useEffect(() => {
+    if (audioUrl) {
+      const audio = new Audio(audioUrl);
+      audio.play().catch((error) => {
+        console.error("Audio playback failed:", error);
+      });
+    }
+  }, [audioUrl]);
+
+  return (
+    <div>
+      <h1>Play Audio</h1>
+      {audioUrl && <audio src={audioUrl} autoPlay />}
+    </div>
   );
-
-  return dataArray.buffer;
 };
 
-const playAudio = (audioBuffer: ArrayBuffer) => {
-  const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-  audioContext.decodeAudioData(audioBuffer, (buffer) => {
-    const source = audioContext.createBufferSource();
-    source.buffer = buffer;
-    source.connect(audioContext.destination);
-    source.start(0);
-  });
-};
+export default AudioPlayer;

@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import Together from "together-ai";
-import {readMessageAloud} from "./TTS";
+import AudioPlayer from "./TTS";
+
+
+
+const intro: string = "Be precise and to the point, But also polite and playful. You don't have to keep saying Hi."
+
+
 
 interface AgentProps {
   prompt: string;
@@ -21,7 +27,7 @@ const Agent: React.FC<AgentProps> = ({ prompt }) => {
         if (prompt) {
           const updatedHistory = [
             ...conversationHistory,
-            { role: "user", content: prompt }
+            { role: "user", content:intro +  prompt }
           ];
 
           const response = await together.chat.completions.create({
@@ -30,12 +36,10 @@ const Agent: React.FC<AgentProps> = ({ prompt }) => {
           });
 
           const assistantMessage = response.choices[0].message.content;
-          updatedHistory.push({ role: "assistant", content: assistantMessage });
+          updatedHistory.push({ role: "assistant", content:  assistantMessage });
           setConversationHistory(updatedHistory);
 
           setResponseMessage(assistantMessage);
-          readMessageAloud(assistantMessage)
-
         }
       } catch (error) {
         console.error("Error calling Together API:", error);
@@ -53,6 +57,7 @@ const Agent: React.FC<AgentProps> = ({ prompt }) => {
       {conversationHistory.map((msg, index) => (
         <p key={index}><strong>{msg.role}:</strong> {msg.content}</p>
       ))}
+      <AudioPlayer responseMessage={responseMessage} />
     </div>
   );
 };

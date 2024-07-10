@@ -19,7 +19,6 @@ import {
 } from './keywords';
 
 
-
   const createNodes = (
     setName: Dispatch<SetStateAction<string>>,
     setMake: Dispatch<SetStateAction<string>>,
@@ -48,7 +47,7 @@ import {
       },
     },
     make: {
-      message: () => `Their name is ${name}. Say hello to them, and Ask them what make their vehicle is. Just ask about the make, we will ask about the model later.`,
+      message: () => `Ask them what make their vehicle is. Just ask specifcially about the make, we will ask about the model later.`,
       next: (response: string) => {
         const carMake = carMakes.find(make => response.toLowerCase().includes(make.toLowerCase()));
         if (carMake) {
@@ -72,7 +71,7 @@ import {
       keywords: carMakes,
     },
     model: {
-      message: () => `So their name is ${name} and their vehicle is a ${make}. Ask them the model of their ${make}.`,
+      message: () => `Ask them the model of their ${make}.`,
       next: (response: string) => {
         console.log(carModels[make]);
         if (carModels[make] && carModels[make].includes(response)) {
