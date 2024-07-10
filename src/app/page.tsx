@@ -6,6 +6,9 @@ import { createNodes } from "./stateMachine";
 import styles from "./page.module.css";
 import Agent from "./agent";
 
+import { WaveFile } from 'wavefile';
+
+
 const Home: React.FC = () => {
   const [transcript, setTranscript] = useState<string>("");
   const [message, setMessage] = useState<string>("");
@@ -95,10 +98,43 @@ const Home: React.FC = () => {
       console.error(err);
     });
 
-    mediaRecorder.addEventListener("dataavailable", (event) => {
+    mediaRecorder.addEventListener("dataavailable", async (event) => {
       if (event.data.size > 0) {
-        
-        connection.send(event.data);
+
+        if (event.data.size == 0) {
+
+          const audioBlob = new Blob([event.data], { type: 'audio/webm' });
+          const arrayBuffer = await audioBlob.arrayBuffer();
+          
+          const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+          const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+          
+          // Convert to WAV
+          const wav = new WaveFile();
+          const float32Array = audioBuffer.getChannelData(0);
+          const buffer = new Int16Array(float32Array.length);
+          
+          for (let i = 0; i < float32Array.length; i++) {
+              buffer[i] = Math.max(-1, Math.min(1, float32Array[i])) * 0x7FFF;
+          }
+          
+          wav.fromScratch(1, audioBuffer.sampleRate, '16', buffer);
+          
+          // Change sample rate to 8 kHz
+          wav.toSampleRate(8000);
+          
+          // Convert to 8-bit mu-law
+          wav.toMuLaw();
+          
+          const muLawBlob = new Blob([wav.toBuffer()], { type: 'audio/mulaw' });
+          
+          console.log(muLawBlob);
+          
+          connection.send(muLawBlob);
+        } else {
+          connection.send(event.data);
+
+        }
       }
     });
 
