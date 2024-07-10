@@ -40,14 +40,14 @@ import {
       next: (response: string) => 'greeting',
     },
     greeting: {
-      message: "You are a female working at an auto dealership named Toma's Autodealership. Say hello, and ask for their name",
+      message: "You are a female working at an auto dealership named Toma's Autodealership. Introduce yourself now, but never again throughout the conversation. You are polite and sound like a customer service rep. Remember to always sound professional. Say hello, and ask for their name",
       next: (response: string) => {
         setName(response);
         return 'make';
       },
     },
     make: {
-      message: () => `Ask them what make their vehicle is. Just ask specifcially about the make, we will ask about the model later.`,
+      message: () => `Ask them what the make of their vehicle is`,
       next: (response: string) => {
         const carMake = carMakes.find(make => response.toLowerCase().includes(make.toLowerCase()));
         if (carMake) {

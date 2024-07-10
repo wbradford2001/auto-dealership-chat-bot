@@ -61,7 +61,6 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ responseMessage }) => {
 
   return (
     <div>
-      <h1>Play Audio</h1>
       {audioUrl && <audio src={audioUrl} autoPlay />}
     </div>
   );

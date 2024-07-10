@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import { createClient, LiveTranscriptionEvents } from "@deepgram/sdk";
 import { createNodes } from "./stateMachine";
+import styles from "./page.module.css";
 import Agent from "./agent";
 
 const Home: React.FC = () => {
@@ -19,6 +20,11 @@ const Home: React.FC = () => {
   const [appointmentDay, setAppointmentDay] = useState<string>("");
   const [appointmentTime, setAppointmentTime] = useState<string>("");
   const [chatbotStarted, setChatbotStarted] = useState<boolean>(false);
+
+
+  const [customer_words, setCustomer_words] = useState<string>("");
+
+
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const connectionRef = useRef<any>(null);
@@ -51,6 +57,11 @@ const Home: React.FC = () => {
   }, [currentNodeKey, name, make, model, year, service, appointmentDay, appointmentTime]);
 
   const startTranscription = async () => {
+    if (currentNodeKey === 'halt' || currentNodeKey === 'confirmation') {
+      stopTranscription();
+      return;
+    }
+
     setIsListening(true);
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     const mediaRecorder = new MediaRecorder(stream, {
@@ -101,6 +112,7 @@ const Home: React.FC = () => {
   const handleResponse = (response: string) => {
     if (currentNodeKey) {
       const nextNodeKey = nodes[currentNodeKey].next(response);
+      setCustomer_words(response)
       setCurrentNodeKey(nextNodeKey);
     }
   };
@@ -118,33 +130,37 @@ const Home: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (chatbotStarted && !isListening && message) {
+    if (chatbotStarted && !isListening && message && currentNodeKey !== 'halt') {
       const timer = setTimeout(() => {
         startTranscription();
       }, 2000); // Delay before restarting transcription
 
       return () => clearTimeout(timer);
     }
-  }, [chatbotStarted, isListening, message]);
+  }, [chatbotStarted, isListening, message, currentNodeKey]);
 
   return (
-    <div>
-      <h1>Microphone to Deepgram</h1>
+    <div className={styles.container}>
+      <h1 className={styles.header}>Voice AI ChatBot</h1>
       {!chatbotStarted ? (
-        <>
-          <p>Press the button to start the chatbot</p>
-          <button onClick={handleStart}>
+        <div className={styles.startContainer}>
+          <p className={styles.instruction}>Press the button to start the chatbot</p>
+          <button className={styles.startButton} onClick={handleStart}>
             Start Chatbot
           </button>
-        </>
+        </div>
       ) : (
-        <>
-          <p>Chatbot started. Listening...</p>
-          <button onClick={stopTranscription} disabled={!isListening}>
-            {isListening ? "Stop Listening" : "Stopped"}
-          </button>
-          <Agent prompt={message} />
-          <div>
+        <div className={styles.chatContainer}>
+          <div className={styles.dialogContainer}>
+            <h2 className={styles.status}>
+              ChatBot Dialog ({(currentNodeKey === "halt" || currentNodeKey === "confirmation") ? "Stopped" : "Running"})
+            </h2>
+            {/* <button className={styles.stopButton} onClick={stopTranscription} disabled={!isListening}>
+              {isListening ? "Stop Listening" : "Stopped"}
+            </button> */}
+            <Agent prompt={message} customer_words={customer_words}/>
+          </div>
+          <div className={styles.infoContainer}>
             <h2>Collected Information</h2>
             <p>Name: {name}</p>
             <p>Make: {make}</p>
@@ -154,10 +170,11 @@ const Home: React.FC = () => {
             <p>Appointment Day: {appointmentDay}</p>
             <p>Appointment Time: {appointmentTime}</p>
           </div>
-        </>
+        </div>
       )}
     </div>
   );
+  
 };
 
 export default Home;

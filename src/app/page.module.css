@@ -1,0 +1,74 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+  }
+  
+  .header {
+    font-size: 2em;
+    margin-bottom: 20px;
+  }
+  
+  .startContainer, .chatContainer {
+    width: 100%;
+    max-width: 1200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+  
+  .startButton, .stopButton {
+    padding: 10px 20px;
+    font-size: 1em;
+    margin-top: 10px;
+    cursor: pointer;
+  }
+  
+  .startButton {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+  }
+  
+  .stopButton {
+    background-color: #f44336;
+    color: white;
+    border: none;
+  }
+  
+  .instruction {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+  }
+  
+  .chatContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+  }
+  
+  .dialogContainer {
+    flex: 1;
+    overflow-y: auto;
+    max-height: 80vh;
+    padding-right: 20px;
+    border-right: 1px solid #ddd;
+  }
+  
+  .infoContainer {
+    flex: 1;
+    padding-left: 20px;
+  }
+  
+  .status {
+    background-color: white;
+    position: sticky;
+    top: 0;
+    font-size: 1.2em;
+    margin-bottom: 10px;
+    
+  }
