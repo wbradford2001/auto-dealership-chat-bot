@@ -98,6 +98,7 @@ import {
       next: (response: string) => {
         if (years.includes(response.toLowerCase())) {
           setYear(yearStringToNumber[response]);
+          console.log(year)
           if (makesWith50kCheck.includes(make)) {
             return 'mileageCheck';
           }

@@ -19,6 +19,8 @@ const Home: React.FC = () => {
   const [service, setService] = useState<string>("");
   const [appointmentDay, setAppointmentDay] = useState<string>("");
   const [appointmentTime, setAppointmentTime] = useState<string>("");
+
+  
   const [chatbotStarted, setChatbotStarted] = useState<boolean>(false);
 
 
