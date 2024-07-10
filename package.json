@@ -6,22 +6,26 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "transcribe": "node scripts/transcribe.js"
   },
   "dependencies": {
     "@deepgram/sdk": "^3.4.4",
     "cross-fetch": "^4.0.0",
     "dotenv": "^16.4.5",
+    "downsample-lttb": "^0.0.1",
     "next": "14.2.4",
     "react": "^18",
     "react-dom": "^18",
     "simple-peer": "^9.11.1",
+    "together-ai": "^0.6.0-alpha.3",
+    "wavefile": "^11.0.0",
     "webrtc-adapter": "^9.0.1"
   },
   "devDependencies": {
-    "typescript": "^5",
     "@types/node": "^20",
     "@types/react": "^18",
-    "@types/react-dom": "^18"
+    "@types/react-dom": "^18",
+    "typescript": "^5"
   }
 }
