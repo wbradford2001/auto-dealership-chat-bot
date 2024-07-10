@@ -4,7 +4,7 @@ import AudioPlayer from "./TTS";
 
 
 
-const intro: string = "Be precise and to the point, But also polite and playful. You don't have to keep saying Hi. Remember to always sound polite and professional. "
+const intro: string = "Be precise and to the point, keep un necessary words to a minimum, You don't have to keep saying Hi. Remember to always sound polite and professional. "
 
 
 
