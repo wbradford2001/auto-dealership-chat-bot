@@ -19,6 +19,7 @@ import {
 } from './keywords';
 
 
+
   const createNodes = (
     setName: Dispatch<SetStateAction<string>>,
     setMake: Dispatch<SetStateAction<string>>,
@@ -36,18 +37,18 @@ import {
     appointmentTime: string
   ):  ConversationNodes => ({
     start: {
-      message: "Hello! What is your name?",
+      message: "",
       next: (response: string) => 'greeting',
     },
     greeting: {
-      message: "Hello! What is your name?",
+      message: "You are a female working at an auto dealership named Toma's Autodealership. Say hello, and ask for their name",
       next: (response: string) => {
         setName(response);
         return 'make';
       },
     },
     make: {
-      message: () => `Hello ${name}, what is the make of your vehicle?`,
+      message: () => `Their name is ${name}. Say hello to them, and Ask them what make their vehicle is. Just ask about the make, we will ask about the model later.`,
       next: (response: string) => {
         const carMake = carMakes.find(make => response.toLowerCase().includes(make.toLowerCase()));
         if (carMake) {
@@ -59,7 +60,7 @@ import {
       keywords: carMakes,
     },
     unrecognizedMake: {
-      message: "I don't recognize that car make. Please try again.",
+      message: "You don't recognize that vehicle make. Ask them to try again",
       next: (response: string) => {
         const carMake = carMakes.find(make => response.toLowerCase().includes(make.toLowerCase()));
         if (carMake) {
@@ -71,7 +72,7 @@ import {
       keywords: carMakes,
     },
     model: {
-      message: () => `Got it, ${name}. What is the model of your ${make}?`,
+      message: () => `So their name is ${name} and their vehicle is a ${make}. Ask them the model of their ${make}.`,
       next: (response: string) => {
         console.log(carModels[make]);
         if (carModels[make] && carModels[make].includes(response)) {
@@ -83,7 +84,7 @@ import {
       keywords: carModels[make],
     },
     unrecognizedModel: {
-      message: () => `I don't recognize that model for your ${make}. Please try again.`,
+      message: () => `You don't recognize that. Ask them to try again.`,
       next: (response: string) => {
         if (carModels[make] && carModels[make].includes(response)) {
           setModel(response);
@@ -94,7 +95,7 @@ import {
       keywords: carModels[make],
     },
     year: {
-      message: () => `Thanks, ${name}. What is the year of your ${make} ${model}?`,
+      message: () => `Ask the customer what year their ${make} ${model} is.`,
       next: (response: string) => {
         if (years.includes(response.toLowerCase())) {
           setYear(yearStringToNumber[response]);
@@ -108,7 +109,7 @@ import {
       keywords: years,
     },
     unrecognizedYear: {
-      message: "I don't recognize that year. Please try again.",
+      message: "You don't recognize that year.",
       next: (response: string) => {
         if (years.includes(response.toLowerCase())) {
           setYear(yearStringToNumber[response]);
@@ -122,7 +123,7 @@ import {
       keywords: years,
     },
     mileageCheck: {
-      message: () => `Has your ${make} ${model} driven more than 50,000 miles? (yes or no)`,
+      message: () => `Ask them if their ${make} ${model} has driven more than 50,000 miles.`,
       next: (response: string) => {
         if (response.toLowerCase().includes('yes')) {
           return 'offerFactoryMaintenance';
@@ -134,7 +135,7 @@ import {
       keywords: yesNoKeywords,
     },
     unrecognizedMileageResponse: {
-      message: "I don't understand that response. Has your vehicle driven more than 50,000 miles? (yes or no)",
+      message: "You  don't understand that response. Ask them if their vehicle has driven more than 50,000 miles",
       next: (response: string) => {
         if (response.toLowerCase().includes('yes')) {
           return 'offerFactoryMaintenance';
@@ -146,7 +147,7 @@ import {
       keywords: yesNoKeywords,
     },
     offerFactoryMaintenance: {
-      message: "Would you like to schedule a factory-recommended maintenance? (yes or no)",
+      message: "Ask if they would you like to schedule a factory-recommended maintenance.",
       next: (response: string) => {
         if (response.toLowerCase().includes('yes')) {
           setService("factory-recommended maintenance");
@@ -159,7 +160,7 @@ import {
       keywords: yesNoKeywords,
     },
     unrecognizedFactoryMaintenanceResponse: {
-      message: "I don't understand that response. Would you like to schedule a factory-recommended maintenance? (yes or no)",
+      message: "You don't understand that response. Ask them if they would you like to schedule a factory-recommended maintenance",
       next: (response: string) => {
         if (response.toLowerCase().includes('yes')) {
           setService("factory-recommended maintenance");
@@ -172,7 +173,7 @@ import {
       keywords: yesNoKeywords,
     },
     halt: {
-      message: "Have a great Day",
+      message: "Say there is noo recommended services for them. Tell them to have a wonderful day.",
       next: (response: string) => {
 
       },
@@ -180,7 +181,7 @@ import {
     service: {
       message: () => {
         const recommendedServices = getRecommendedServices(make);
-        return `Based on your ${make} ${model}, we recommend the following services: ${recommendedServices.join(', ')}. What service do you need?`;
+        return `Say that based on their ${make} ${model}, we recommend the following services: ${recommendedServices.join(', ')}. Ask them what services they need.`;
       },
       next: (response: string) => {
         const recommendedServices = getRecommendedServices(make);
@@ -196,7 +197,7 @@ import {
     unrecognizedService: {
       message: () => {
         const recommendedServices = getRecommendedServices(make);
-        return `I don't recognize that service. We recommend the following services: ${recommendedServices.join(', ')}. What service do you need?`;
+        return `You don't recognize that service. We recommend the following services: ${recommendedServices.join(', ')}. Ask What service do they need.`;
       },
       next: (response: string) => {
         const recommendedServices = getRecommendedServices(make);
@@ -210,7 +211,7 @@ import {
       keywords: getRecommendedServices(make),
     },
     appointmentDay: {
-      message: () => `Got it, ${name}. Please select a day of the week (Monday to Friday) for your ${service} service.`,
+      message: () => `Ask them to Please select a day of the week (Monday to Friday) for their ${service} service.`,
       next: (response: string) => {
         const selectedDay = daysOfWeek.find(day => response.toLowerCase().includes(day.toLowerCase()));
         if (selectedDay) {
@@ -222,7 +223,7 @@ import {
       keywords: daysOfWeek,
     },
     unrecognizedDay: {
-      message: "I don't recognize that day. Please try again.",
+      message: "You don't recognize that day. Please ask them to try again.",
       next: (response: string) => {
         const selectedDay = daysOfWeek.find(day => response.toLowerCase().includes(day.toLowerCase()));
         if (selectedDay) {
@@ -236,7 +237,7 @@ import {
     appointmentTime: {
       message: () => {
         const availableTimes = electricVehicleMakes.includes(make) ? oddHours : evenHours;
-        return `For your ${make} ${model}, available times for ${service} on ${appointmentDay} are: ${availableTimes.join(', ')}. Please choose one.`;
+        return `For their ${make} ${model}, available times for ${service} on ${appointmentDay} are: ${availableTimes.join(', ')}. Please ask them to choose one.`;
       },
       next: (response: string) => {
         const availableTimes = electricVehicleMakes.includes(make) ? oddHours : evenHours;
@@ -253,7 +254,7 @@ import {
     unrecognizedTime: {
       message: () => {
         const availableTimes = electricVehicleMakes.includes(make) ? oddHours : evenHours;
-        return `I don't recognize that time. Available times for your ${make} ${model} on ${appointmentDay} are: ${availableTimes.join(', ')}. Please choose one.`;
+        return `You don't recognize that time. Available times for their ${make} ${model} on ${appointmentDay} are: ${availableTimes.join(', ')}. Please ask them to choose one.`;
       },
       next: (response: string) => {
         const availableTimes = electricVehicleMakes.includes(make) ? oddHours : evenHours;
@@ -268,7 +269,7 @@ import {
       keywords: electricVehicleMakes.includes(make) ? oddHours : evenHours,
     },
     confirmation: {
-      message: () => `Thanks, ${name}. Confirm your appointment for ${make} ${model} ${year}, service: ${service}, on ${appointmentDay} at ${appointmentTime}.`,
+      message: () => `Say Thanks, ${name}. Confirm their appointment for ${make} ${model} ${year}, service: ${service}, on ${appointmentDay} at ${appointmentTime}. Wish them a good rest of their day`,
       next: () => null,
     },
 });
